@@ -1,8 +1,10 @@
 import pandas as pd
+import time
+import xgboost as xgb
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import ndcg_score, precision_score
-import xgboost as xgb
 
 def load_data(file_path):
     with open(file_path, 'r') as file:
@@ -24,6 +26,16 @@ def preprocess_data(df):
     X_train, X_test, y_train, y_test = train_test_split(scaled_features, target_variable, test_size=0.3, random_state=42)
     return X_train, X_test, y_train, y_test
 
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"Время выполнения функции '{func.__name__}': {round(end_time - start_time, 3)} секунд")
+        return result
+    return wrapper
+
+@timer
 def xgboost_regressor(X_train, X_test, y_train, y_test):
     xgb_model = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42)
 
